@@ -11,29 +11,30 @@ class FB2:
         self.doc.write("""<?xml version="1.0" encoding="utf-8"?>
         <FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:xlink="http://www.w3.org/1999/xlink">
           <description>
+          
             <title-info>
               <genre></genre>
               <author>
-                <first-name>%s</first-name>
-                <last-name></last-name>
+                <nickname>%s</nickname>
               </author>
               <book-title> %s </book-title>
-              <lang>en</lang>
-            </title-info>
-            <document-info>
-              <author>
-                <first-name></first-name>
-                <last-name></last-name>
-              </author>
-              <program-used></program-used>
-              <date>6.2.2018</date>
               <coverpage>
                 <image xlink:href="#cover.jpg"/>
-            </coverpage>
+              </coverpage>
+              <lang>ru</lang>
+            </title-info>
+            
+            <document-info>
+              <author>
+                <nickname>pasana</nickname>
+              </author>
+              <program-used>https://github.com/pasana/BookScrapper</program-used>
+              <date>6.2.2018</date>
+              
               <id>1a7c50fa-ff75-4176-8418-4d91b31bc2b0</id>
               <version>1.0</version>
             </document-info>
-            <publish-info></publish-info>
+            
           </description>
           <body>
             <section>
@@ -57,10 +58,9 @@ class FB2:
         bin_image = base64.b64encode(urlopen(url).read()).decode("utf-8")
         l = len(self.IMAGE_BUFFER_LIST)
         if l == 0:
-            self.doc.write('<image l:href="#cover.jpg"/>')
             self.IMAGE_BUFFER_LIST += [self.IMAGE_TEMPLATE % ("cover", bin_image)]
         else:
-            self.doc.write('<image l:href="#%d.jpg"/>' % str(l))
+            self.doc.write('<image l:href="#%d.jpg"/>' % l)
             self.IMAGE_BUFFER_LIST += [self.IMAGE_TEMPLATE % (str(l), bin_image)]
 
     def add_heading(self, text, level=3):

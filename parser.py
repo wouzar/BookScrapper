@@ -1,12 +1,37 @@
-from bs4 import NavigableString
+import requests
+from bs4 import BeautifulSoup, NavigableString
 
 from const import *
+from fb2 import FB2
 
 
 class Parser:
-    def __init__(self, document, book_id):
-        self.doc = document
+    def __init__(self, book_id):
         self.book_id = book_id
+        self.set_global_info()
+        print(self.author)
+        print(self.book_name, "\n")
+        self.doc = FB2(self.book_name, self.author)
+
+    def set_global_info(self):
+        response = requests.get(GLOBAL_INFO % self.book_id)
+        body = BeautifulSoup(response.content, "lxml")
+        self.author = body.find(text='Автор: ').next.next.get_text().strip()
+        self.book_name = body.find(text='Название: ').next.get_text().strip()
+        self.annotation = body.find('p', {'class': 'span_str'}).get_text().replace('\t', '').replace('\r\n', '\n')
+
+    def run(self):
+        page = 0
+        while True:
+            page += 1
+            print(TEMPLATE % (self.book_id, page))
+            response = requests.get(TEMPLATE % (self.book_id, page))
+            body = BeautifulSoup(response.content, "lxml")
+            self.process_page(body)
+            if body.find('span', text='Вперед'):
+                break
+        self.doc.close()
+        print("\ndone")
 
     def process_page(self, body):
         book = body.find('div', class_="MsoNormal").children
@@ -17,7 +42,6 @@ class Parser:
 
     def process_element(self, element):
         element_tag, element_class, children_n, is_new_paragraph = self.get_triple(element)
-        # unique.add((element_tag, element_class,))
 
         if element_tag in ['a'] or is_new_paragraph or element_tag == 'br':
             return
@@ -80,7 +104,6 @@ class Parser:
     def process_children(self, children, parent_class):
         for part in children:
             part_tag, part_class, part_children, part_is_new_paragraph = self.get_triple(part)
-            # unique.add((part_tag, part_class,))
             if part_is_new_paragraph:
                 continue
             if not part_children:
