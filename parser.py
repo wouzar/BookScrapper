@@ -32,6 +32,7 @@ class Parser:
                 break
         self.doc.close()
         print("\ndone")
+        return self.doc.filename
 
     def process_page(self, body):
         book = body.find('div', class_="MsoNormal").children

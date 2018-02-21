@@ -7,7 +7,8 @@ class FB2:
     IMAGE_BUFFER_LIST = []
 
     def __init__(self, book, author):
-        self.doc = open('%s.%s.fb2' % (author, book), "w+")
+        self.filename = '%s.%s.fb2' % (author, book)
+        self.doc = open(self.filename, "w+")
         self.doc.write("""<?xml version="1.0" encoding="utf-8"?>
         <FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:xlink="http://www.w3.org/1999/xlink">
           <description>

@@ -15,6 +15,8 @@ python LoveReadtoFB2.py
 
 Enjoy your book in the same directory!
 
+Also you can use @book_scrapper_bot to get the books you want.
+
 ### To be done in future:
 * notes
 * levels of titles
