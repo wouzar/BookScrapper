@@ -31,6 +31,7 @@ class Parser:
             if body.find('span', text='Вперед'):
                 break
         self.doc.close()
+        self.doc.IMAGE_BUFFER_LIST.clear()
         print("\ndone")
         return self.doc.filename
 
