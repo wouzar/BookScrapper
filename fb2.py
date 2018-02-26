@@ -1,15 +1,12 @@
 import base64
+import io
 from urllib.request import urlopen
 
 
 class FB2:
     IMAGE_TEMPLATE = '<binary id="%s.jpg" content-type="image/jpeg">%s </binary>'
     IMAGE_BUFFER_LIST = []
-
-    def __init__(self, book, author):
-        self.filename = '%s.%s.fb2' % (author, book)
-        self.doc = open(self.filename, "w+")
-        self.doc.write("""<?xml version="1.0" encoding="utf-8"?>
+    START = """<?xml version="1.0" encoding="utf-8"?>
         <FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:xlink="http://www.w3.org/1999/xlink">
           <description>
           
@@ -39,7 +36,16 @@ class FB2:
           </description>
           <body>
             <section>
-            """ % (author, book))
+            """
+
+    def __init__(self, book, author, in_memory=True):
+        self.filename = '%s.%s.fb2' % (author, book)
+        self.in_memory = in_memory
+        if in_memory:
+            self.doc = io.StringIO(self.filename)
+        else:
+            self.doc = open(self.filename, "w+")
+        self.doc.write(self.START % (author, book))
 
     def add_paragraph(self):
         self.doc.write("<p>")
@@ -74,4 +80,12 @@ class FB2:
             self.doc.write(im)
             self.doc.write('\n')
             self.doc.write("</FictionBook>")
+        if self.in_memory:
+            self.result = io.BytesIO(self.doc.getvalue().encode('utf-8'))
         self.doc.close()
+
+    def get_file(self):
+        if self.in_memory:
+            return self.result
+        else:
+            return open(self.filename, 'rb')

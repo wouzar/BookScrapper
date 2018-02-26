@@ -1,3 +1,7 @@
+import os
+
+bot_token = os.environ['TELEGRAM_TOKEN']
+
 import logging
 import random
 import urllib.parse
@@ -8,7 +12,6 @@ from emoji import emojize
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler, RegexHandler
 
-from bot_token import bot_token
 from const import SEARCH_TEMPLATE
 from parser import Parser
 
@@ -36,7 +39,7 @@ def unknown(bot, update):
 
 
 def cancel(bot, update):
-    update.message.reply_text("Ладненько", reply_markup=ReplyKeyboardRemove)
+    update.message.reply_text("Ладненько", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
@@ -44,7 +47,10 @@ def book(bot, update, args=None, user_data=None):
     if args:
         if len(args) > 1:
             update.message.reply_text("Error")
-    keys = user_data.keys()
+    try:
+        keys = user_data.keys()
+    except:
+        keys = []
     if args or 'BOOK' in keys or 'BOOKS' in keys:
         try:
             if args:
@@ -58,18 +64,20 @@ def book(bot, update, args=None, user_data=None):
                              text=emojize(
                                  "Скачиваю \"%s\" by %s для тебя! :sparkles: \nОставайся на связи! :hourglass:" % (
                                      parser.book_name, parser.author
-                                 )), use_aliases=True)
+                                 )), use_aliases=True, reply_markup=ReplyKeyboardRemove())
             filename = parser.run()
+            file_result = parser.doc.get_file()
         except ValueError:
             update.message.reply_text(
                 'Что-то не так с идентификатором книги... Попробуй еще раз!'
             )
             return
         bot.send_document(chat_id=update.message.chat_id,
-                          document=open(filename, 'rb'))
+                          document=file_result, filename=filename)
         update.message.reply_text(
             emojize('Приятного чтения! \n:heart: :book:', use_aliases=True)
         )
+        return ConversationHandler.END
         # update.message.reply_text(
         #    'Ничего страшного, попробуй снова!'
         # )

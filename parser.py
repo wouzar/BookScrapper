@@ -6,12 +6,13 @@ from fb2 import FB2
 
 
 class Parser:
-    def __init__(self, book_id):
+    def __init__(self, book_id, in_memory=True):
         self.book_id = book_id
         self.set_global_info()
         print(self.author)
         print(self.book_name, "\n")
-        self.doc = FB2(self.book_name, self.author)
+        self.doc = FB2(self.book_name, self.author, in_memory=True)
+        self.in_memory = in_memory
 
     def set_global_info(self):
         response = requests.get(GLOBAL_INFO % self.book_id)
