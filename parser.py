@@ -71,19 +71,27 @@ class Parser:
                     self.doc.add_heading(element.text, level=int(element_class[-1]))
             else:
                 if element_class[:-1] == 'take_h':
-                    if element.contents[1].name == 'br':
-                        self.doc.add_heading("%s. %s" % (element.contents[0], element.contents[2]),
+                    try:
+                        if element.contents[1].name == 'br':
+                            self.doc.add_heading("%s. %s" % (element.contents[0], element.contents[2]),
+                                                 level=int(element_class[-1]))
+                        else:
+                            print(element)
+                    except IndexError:
+                        self.doc.add_heading("%s" % element.text,
                                              level=int(element_class[-1]))
-                    else:
-                        print(element)
                 elif element_class == 'em':
                     self.doc.add_paragraph()
                     self.process_children(element.contents, element_class)
                     self.doc.finish_paragraph()
                 elif element_class == 'poem':
                     pass  # TODO
-        elif element_tag[0] == 'h' and len(element_tag) == 2:
-            self.doc.add_heading(element.text, level=int(element_tag[1]))
+        else:
+            try:
+                if element_tag[0] == 'h' and len(element_tag) == 2:
+                    self.doc.add_heading(element.text, level=int(element_tag[1]))
+            except TypeError:
+                self.doc.add_heading(element.text, level=1)
 
     def get_triple(self, element):
         name = element.name
