@@ -11,7 +11,7 @@ class Parser:
         self.set_global_info()
         print(self.author)
         print(self.book_name, "\n")
-        self.doc = FB2(self.book_name, self.author, in_memory=True)
+        self.doc = FB2(self.book_name, self.author, in_memory)
         self.in_memory = in_memory
 
     def set_global_info(self):

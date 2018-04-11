@@ -12,6 +12,10 @@ Then save the file and run:
 ```
 python LoveReadtoFB2.py
 ```
+You can also pass id manually like this:
+```
+python LoveReadtoFB2.py --book_id=2039
+```
 
 Enjoy your book in the same directory!
 
